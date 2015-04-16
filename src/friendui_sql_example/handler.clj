@@ -8,9 +8,9 @@
             [cemerick.friend :as friend]
             [cemerick.friend [workflows :as workflows]
                              [credentials :as creds]]
-            [de.sveri.friendui.routes.user :refer [friend-routes]]
+            [de.sveri.friendui.routes.user :as user :refer [friend-routes login]]
             [de.sveri.friendui.globals :as f-global]
-            [sventechie.friendui-sql.db :refer [login-user]]
+            [sventechie.friendui-sql.db :as user-db :refer [login-user]]
             [sventechie.friendui-sql.storage :refer :all]
             [sventechie.friendui-sql.globals :refer [friendui-config]]
             [korma.core :refer :all]
@@ -21,8 +21,7 @@
 (def FrienduiStorageImpl (->FrienduiStorage db-conn))
 
 (def friend-settings
-  {:credential-fn             (partial creds/bcrypt-credential-fn
-                                       (partial login-user db-conn))
+  {:credential-fn             (partial creds/bcrypt-credential-fn (partial user-db/login-user db-conn))
    :workflows                 [(workflows/interactive-form)]
    :login-uri                 "/user/login"
    :unauthorized-redirect-uri "/user/login"
@@ -47,7 +46,11 @@
                          :activate-account-succ-func (fn[user-map] "activated")})
 
 (defroutes app-routes
-  (GET "/" [] "Hello World")
+  (GET "/" [] "<html>Try <a href=\"http://localhost:3000/user/login\">login</a> or
+                         <a href=\"http://localhost:3000/user/admin\">admin</a></html> or
+                         <a href=\"http://localhost:3000/user/signup\">sign up</a></html>")
+  (GET "/authorized" request
+       (friend/authorize #{:user/free} "This page can only be seen by authenticated users."))
   (friend-routes FrienduiStorageImpl)
   (route/not-found "Not Found"))
 
