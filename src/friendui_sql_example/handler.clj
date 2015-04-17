@@ -27,6 +27,9 @@
    :unauthorized-redirect-uri "/user/login"
    :default-landing-uri       "/"})
 
+;; user levels
+(derive :user/admin :user/free)
+
 (def template-path "templates/user/")
 (html/deftemplate base (str template-path "base.html")
                   [{:keys [title content]}]
