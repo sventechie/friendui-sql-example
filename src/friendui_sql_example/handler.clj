@@ -51,7 +51,8 @@
 (defroutes app-routes
   (GET "/" [] "<html>Try <a href=\"http://localhost:3000/user/login\">login</a> or
                          <a href=\"http://localhost:3000/user/admin\">admin</a></html> or
-                         <a href=\"http://localhost:3000/user/signup\">sign up</a></html>")
+                         <a href=\"http://localhost:3000/user/signup\">sign up</a></html> or
+                         <a href=\"http://localhost:3000/authorized\">authorized only</a></html>")
   (GET "/authorized" request
        (friend/authorize #{:user/free} "This page can only be seen by authenticated users."))
   (friend-routes FrienduiStorageImpl)
